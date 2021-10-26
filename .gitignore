@@ -1,1 +1,5 @@
 /.env
+/build/
+/docker/volumes/
+/data/
+.idea/
