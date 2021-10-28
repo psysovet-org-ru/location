@@ -49,7 +49,7 @@ jobs:
 
           context: ./src
 
-          file: Dockerfile
+          file: ./src/Dockerfile
 
           push: true
 
