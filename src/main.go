@@ -11,7 +11,7 @@ import (
 	"location/connect"
 	_ "location/migrations"
 	"location/repository"
-	"location/service"
+	service2 "location/service"
 	"log"
 	"net/http"
 )
@@ -40,7 +40,7 @@ func main() {
 		Use:   "init",
 		Short: "init",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return service.PushData(db)
+			return service2.PushData(db)
 		},
 	}
 
@@ -50,7 +50,7 @@ func main() {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			r := chi.NewRouter()
 			r.Use(middleware.Logger)
-			service.Service(r, repository.NewStorage(db))
+			service2.Service(r, repository.NewStorage(db))
 			err = http.ListenAndServe(":3000", r)
 			if err != nil {
 				log.Fatalln(err)

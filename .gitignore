@@ -1,4 +1,4 @@
-/.env
+/src/.env
 /build/
 /docker/volumes/
 /data/

@@ -5,4 +5,7 @@ down:
 	docker-compose -f ./docker/docker-compose.yaml down --remove-orphans
 
 bld:
-	@go build  -o ./build/location
+	@go build   -o ./build/location
+
+deploy:
+	docker build ./src --tag location

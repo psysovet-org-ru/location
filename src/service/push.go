@@ -106,7 +106,7 @@ func readData(fileName string) ([][]string, error) {
 	r := csv.NewReader(f)
 
 	var records [][]string
-	numErr:=0
+	numErr := 0
 
 	for {
 		record, e := r.Read()
@@ -114,7 +114,7 @@ func readData(fileName string) ([][]string, error) {
 		if err == io.EOF {
 			break
 		}
-		if numErr>3 {
+		if numErr > 3 {
 			break
 		}
 
@@ -123,7 +123,7 @@ func readData(fileName string) ([][]string, error) {
 			continue
 		}
 
-		records=append(records,record)
+		records = append(records, record)
 	}
 
 	if err != nil {

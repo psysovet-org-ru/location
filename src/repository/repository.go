@@ -20,10 +20,10 @@ type Region struct {
 }
 
 type City struct {
-	Id          int       `json:"id,omitempty"`
-	Title       string    `json:"title,omitempty"`
-	AreaTitle   string    `json:"area_title,omitempty"`
-	RegionTitle string    `json:"region_title,omitempty"`
+	Id          int    `json:"id,omitempty"`
+	Title       string `json:"title,omitempty"`
+	AreaTitle   string `json:"area_title,omitempty"`
+	RegionTitle string `json:"region_title,omitempty"`
 }
 
 func (s Storage) GetCountry() ([]Country, error) {

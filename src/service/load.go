@@ -25,13 +25,13 @@ type region struct {
 }
 
 type city struct {
-	id        int       `json:"id,omitempty"`
-	sourceId    int    `json:"source_id,omitempty"`
-	regionId    int    `json:"region_id,omitempty"`
-	title        string `json:"title,omitempty"`
-	areaTitle   string `json:"area_title,omitempty"`
-	regionTitle string `json:"region_title,omitempty"`
-	updatedAt time.Time `json:"updated_at,omitempty"`
+	id          int       `json:"id,omitempty"`
+	sourceId    int       `json:"source_id,omitempty"`
+	regionId    int       `json:"region_id,omitempty"`
+	title       string    `json:"title,omitempty"`
+	areaTitle   string    `json:"area_title,omitempty"`
+	regionTitle string    `json:"region_title,omitempty"`
+	updatedAt   time.Time `json:"updated_at,omitempty"`
 }
 
 func LoadData() error {

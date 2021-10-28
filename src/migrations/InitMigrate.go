@@ -1,15 +1,15 @@
 package migrations
 
 import (
-"database/sql"
+	"database/sql"
 
-"github.com/iamsalnikov/mymigrate"
+	"github.com/iamsalnikov/mymigrate"
 )
 
 func init() {
 	mymigrate.Add(
 		"mig_init",
-		func (db *sql.DB) error {
+		func(db *sql.DB) error {
 
 			_, err := db.Exec("create table country\n(\n\tid int auto_increment,\n\ttitle varchar(255) null,\n\tupdate_at datetime null,\n\tconstraint country_pk\n\t\tprimary key (id)\n);")
 			if err != nil {
@@ -27,7 +27,7 @@ func init() {
 			}
 			return nil
 		},
-		func (db *sql.DB) error {
+		func(db *sql.DB) error {
 
 			_, err := db.Exec("drop table cities")
 			if err != nil {
@@ -42,7 +42,6 @@ func init() {
 			if err != nil {
 				return err
 			}
-
 
 			return nil
 		},
