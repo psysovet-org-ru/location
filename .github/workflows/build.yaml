@@ -49,7 +49,7 @@ jobs:
 
           context: ./src
 
-          file: Dockerfile.http-server
+          file: Dockerfile
 
           push: true
 
