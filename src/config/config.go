@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-const defaultPort = 3000
+const defaultPort = 1
 const defaultDSN = "user@/location"
 
 type Config struct {
