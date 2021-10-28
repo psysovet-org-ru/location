@@ -7,5 +7,3 @@ down:
 bld:
 	@go build   -o ./build/location
 
-deploy:
-	docker build ./src --tag location

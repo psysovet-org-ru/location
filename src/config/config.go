@@ -29,7 +29,7 @@ func (c *Config) Load() {
 			return
 		}
 	}
-	c.DefaultPort, err = strconv.Atoi(os.Getenv("DEFAULT_PORT"))
+	c.DefaultPort, err = strconv.Atoi(port)
 	if err != nil {
 		return
 	}

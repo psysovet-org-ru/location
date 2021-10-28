@@ -80,7 +80,7 @@ func main() {
 		},
 	}
 
-	var rootCmd = &cobra.Command{Use: "app"}
+	var rootCmd = &cobra.Command{Use: "location"}
 
 	rootCmd.AddCommand(InitCmd, MigrateCmd, ServiceCmd, EnvCmd)
 
