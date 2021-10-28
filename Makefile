@@ -5,5 +5,5 @@ down:
 	docker-compose -f ./docker/docker-compose.yaml down --remove-orphans
 
 bld:
-	@go build   -o ./build/location
+	@cd ./src &&  go build  -o ../build/location && cd ..
 

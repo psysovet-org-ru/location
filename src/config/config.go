@@ -1,10 +1,12 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"os"
 	"strconv"
 )
+
+const defaultPort = 3000
+const defaultDSN = "user@/location"
 
 type Config struct {
 	DefaultPort int
@@ -14,33 +16,19 @@ type Config struct {
 func (c *Config) Load() {
 	var err error
 
-	envs, err := godotenv.Read()
-	if err != nil {
-		return
+	port, err := strconv.Atoi(os.Getenv("DEFAULT_PORT"))
+	if err != nil || port == 0 {
+		port = defaultPort
 	}
 
-	port := os.Getenv("DEFAULT_PORT")
-
-	var ok bool
-
-	if port == "" {
-		port, ok = envs["DEFAULT_PORT"]
-		if !ok {
-			return
-		}
-	}
-	c.DefaultPort, err = strconv.Atoi(port)
+	c.DefaultPort = port
 	if err != nil {
 		return
 	}
 
 	dsn := os.Getenv("DSN")
-
 	if dsn == "" {
-		dsn, ok = envs["DSN"]
-		if !ok {
-			return
-		}
+		dsn = defaultDSN
 	}
 
 	c.DSN = dsn
