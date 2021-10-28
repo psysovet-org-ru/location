@@ -2,11 +2,12 @@ package connect
 
 import (
 	"database/sql"
-	"os"
+	"location/config"
 )
 
 type Connect struct {
-	db *sql.DB
+	db     *sql.DB
+	config config.Config
 }
 
 func (c *Connect) new(dsn string) (*sql.DB, error) {
@@ -16,9 +17,8 @@ func (c *Connect) new(dsn string) (*sql.DB, error) {
 }
 
 func (c *Connect) Get() (*sql.DB, error) {
-	dsn := os.Getenv("DSN")
 	if c.db == nil {
-		db, err := c.new(dsn)
+		db, err := c.new(c.config.GetDsn())
 		if err != nil {
 			return nil, err
 		}

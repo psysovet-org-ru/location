@@ -1,25 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/iamsalnikov/mymigrate"
 	"github.com/iamsalnikov/mymigrate/cobracmd"
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+	"location/config"
 	"location/connect"
 	_ "location/migrations"
 	"location/repository"
 	service2 "location/service"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
-	godotenv.Load()
+
+	cfg := config.Config{}
+
+	cfg.Load()
 
 	var c connect.Connect
+
+	var port int = cfg.GetPort()
 
 	db, err := c.Get()
 	if err != nil {
@@ -51,7 +58,7 @@ func main() {
 			r := chi.NewRouter()
 			r.Use(middleware.Logger)
 			service2.Service(r, repository.NewStorage(db))
-			err = http.ListenAndServe(":3000", r)
+			err = http.ListenAndServe(":"+strconv.Itoa(port), r)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -59,11 +66,26 @@ func main() {
 		},
 	}
 
+	ServiceCmd.Flags().IntVarP(&port, "ports", "p", cfg.DefaultPort, "Прослушиваемый порт")
+
 	MigrateCmd.AddCommand(cobracmd.CreateCmd, cobracmd.HistoryCmd, cobracmd.NewListCmd, cobracmd.ApplyCmd, cobracmd.DownCmd)
+
+	EnvCmd := &cobra.Command{
+		Use:   "env",
+		Short: "list env",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("DSN: " + cfg.GetDsn())
+			fmt.Println("Port: " + strconv.Itoa(cfg.GetPort()))
+			return nil
+		},
+	}
 
 	var rootCmd = &cobra.Command{Use: "app"}
 
-	rootCmd.AddCommand(InitCmd, MigrateCmd, ServiceCmd)
+	rootCmd.AddCommand(InitCmd, MigrateCmd, ServiceCmd, EnvCmd)
 
-	rootCmd.Execute()
+	err = rootCmd.Execute()
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
