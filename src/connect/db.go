@@ -3,11 +3,16 @@ package connect
 import (
 	"database/sql"
 	"location/config"
+	"log"
 )
 
 type Connect struct {
 	db     *sql.DB
 	config config.Config
+}
+
+func (c *Connect) SetConfig(cfg config.Config) {
+	c.config = cfg
 }
 
 func (c *Connect) new(dsn string) (*sql.DB, error) {
@@ -19,6 +24,9 @@ func (c *Connect) new(dsn string) (*sql.DB, error) {
 func (c *Connect) Get() (*sql.DB, error) {
 	if c.db == nil {
 		db, err := c.new(c.config.GetDsn())
+
+		log.Println("sdsasa", c.config.GetDsn())
+
 		if err != nil {
 			return nil, err
 		}

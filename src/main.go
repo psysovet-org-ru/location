@@ -26,6 +26,8 @@ func main() {
 
 	var c connect.Connect
 
+	c.SetConfig(cfg)
+
 	var port int = cfg.GetPort()
 
 	db, err := c.Get()
