@@ -3,7 +3,6 @@ package connect
 import (
 	"database/sql"
 	"location/config"
-	"log"
 )
 
 type Connect struct {
@@ -24,8 +23,6 @@ func (c *Connect) new(dsn string) (*sql.DB, error) {
 func (c *Connect) Get() (*sql.DB, error) {
 	if c.db == nil {
 		db, err := c.new(c.config.GetDsn())
-
-		log.Println("sdsasa", c.config.GetDsn())
 
 		if err != nil {
 			return nil, err
