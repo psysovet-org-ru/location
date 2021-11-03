@@ -77,6 +77,22 @@ func (s Storage) GetCities(regionID int) ([]City, error) {
 		return []City{}, err
 	}
 
+	return s.listCities(rows)
+}
+
+func (s Storage) Search(regionID int, search string) ([]City, error) {
+	reg := strconv.Itoa(regionID)
+
+	rows, err := s.db.Query("select id, title, area_title, region_title from cities where region_id=? and title like ?", reg, search+"%")
+
+	if err != nil {
+		return []City{}, err
+	}
+
+	return s.listCities(rows)
+}
+
+func (s Storage) listCities(rows *sql.Rows) ([]City, error) {
 	var cities []City
 
 	for rows.Next() {

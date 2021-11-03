@@ -72,7 +72,29 @@ func Service(r *chi.Mux, s repository.Storage) *chi.Mux {
 		jsonData, err := json.Marshal(cities)
 
 		if err != nil {
-			log.Println(err)
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		writer.Write(jsonData)
+	})
+
+	r.Get("/search/city/{region}/{search}", func(writer http.ResponseWriter, request *http.Request) {
+		reg := chi.URLParam(request, "region")
+		search := chi.URLParam(request, "search")
+		region, err := strconv.Atoi(reg)
+		if err != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		searchData, err := s.Search(region, search)
+
+		if err != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+		}
+
+		jsonData, err := json.Marshal(searchData)
+
+		if err != nil {
 			writer.WriteHeader(http.StatusBadRequest)
 		}
 
