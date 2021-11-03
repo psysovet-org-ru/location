@@ -1,134 +1,82 @@
 package service
 
 import (
-	"database/sql"
-	"encoding/csv"
+	"archive/zip"
 	"io"
-	"log"
+	"location/config"
+	"net/http"
 	"os"
-	"time"
 )
 
-func PushData(db *sql.DB) error {
-	err := pushC(db)
+func download(URLFile, fileName string) (int64, error) {
+
+	resp, err := http.Get(URLFile)
 	if err != nil {
-		return err
+		return 0, err
 	}
+	defer resp.Body.Close()
 
-	err = pushR(db)
+	f, err := os.Create(fileName)
 	if err != nil {
-		return err
+		return 0, err
 	}
-
-	err = pushCI(db)
-	if err != nil {
-
-		return err
-	}
-
-	return nil
-}
-
-func pushC(db *sql.DB) error {
-	records, err := readData("./data/countries.csv")
-
-	if err != nil {
-		return err
-	}
-
-	for _, record := range records {
-		t, _ := time.Parse("2006-01-02 15:04:05", record[2])
-		_, err := db.Exec("insert into country (id,title,update_at) values (?,?,?);", record[0], record[1], t.Format("2006-01-02 15:04:05"))
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func pushR(db *sql.DB) error {
-	records, err := readData("./data/regions.csv")
-
-	if err != nil {
-		return err
-	}
-
-	for _, record := range records {
-		t, _ := time.Parse("2006-01-02 15:04:05", record[3])
-		_, err := db.Exec("insert into regions (id,country_id,title,update_at) values (?,?,?,?);", record[0], record[1], record[2], t.Format("2006-01-02 15:04:05"))
-		if err != nil {
-			log.Fatalln(record)
-			return err
-		}
-	}
-
-	return nil
-}
-
-func pushCI(db *sql.DB) error {
-	records, err := readData("./data/cities.csv")
-
-	if err != nil {
-		return err
-	}
-
-	for _, record := range records {
-		t, _ := time.Parse("2006-01-02 15:04:05", record[5])
-		_, err := db.Exec("insert into cities (id,region_id,title,region_title,area_title,update_at) values (?,?,?,?,?,?);", record[0], record[1], record[2], record[3], record[4], t.Format("2006-01-02 15:04:05"))
-		if err != nil {
-			log.Fatalln(implode(record))
-			return err
-		}
-	}
-
-	return nil
-}
-
-func implode(data []string) string {
-	r := ""
-	for _, item := range data {
-		r += item
-	}
-	return r
-}
-
-func readData(fileName string) ([][]string, error) {
-
-	f, err := os.Open(fileName)
-
-	if err != nil {
-		return [][]string{}, err
-	}
-
 	defer f.Close()
 
-	r := csv.NewReader(f)
+	size, err := io.Copy(f, resp.Body)
+	return size, nil
+}
 
-	var records [][]string
-	numErr := 0
-
-	for {
-		record, e := r.Read()
-
-		if err == io.EOF {
-			break
-		}
-		if numErr > 3 {
-			break
-		}
-
-		if e != nil {
-			numErr++
-			continue
-		}
-
-		records = append(records, record)
-	}
-
+func unzip(fileName, unzipPath string) ([]string, error) {
+	// Распаковка содержимого архива
+	zipR, err := zip.OpenReader(fileName)
 	if err != nil {
-		return [][]string{}, err
+		return nil, err
 	}
 
-	return records, nil
+	var result []string
+
+	for _, file := range zipR.File {
+		r, err := file.Open()
+		if err != nil {
+			return nil, err
+		}
+		unzipFile, err := os.Create(unzipPath + file.Name)
+
+		_, err = io.Copy(unzipFile, r)
+		if err != nil {
+			return nil, err
+		}
+		err = r.Close()
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, unzipFile.Name())
+	}
+
+	return result, nil
+}
+
+func GetData() []string {
+	cfg := config.Config{}
+	cfg.Load()
+
+	fileName := cfg.GetDownloadPath() + "location_data.zip"
+	if _, err := os.Stat(fileName); err == nil {
+		os.Remove(fileName)
+	}
+
+	size, err := download(cfg.GetDownloadData(), fileName)
+	if err != nil || size == 0 {
+		return nil
+	}
+
+	_, err = unzip(fileName, cfg.GetDownloadPath())
+	if err != nil {
+		return nil
+	}
+
+	os.Remove(fileName)
+
+	return []string{cfg.DownloadPath + "location_country.sql", cfg.DownloadPath + "location_regions.sql", cfg.DownloadPath + "location_cities.sql"}
 }

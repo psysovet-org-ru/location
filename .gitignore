@@ -3,3 +3,4 @@
 /docker/volumes/
 /data/
 .idea/
+/.env

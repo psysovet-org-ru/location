@@ -7,16 +7,23 @@ import (
 
 const defaultPort = 1
 const defaultDSN = "user@/location"
+const defaultPath = "./"
+
+const KeyDbDsn = "DB_DSN"
+const KeyPort = "DEFAULT_PORT"
+const KeyDownloadData = "DOWNLOAD_DATA"
+const KeyDownloadPath = "DOWNLOAD_PATH"
 
 type Config struct {
-	DefaultPort int
-	DSN         string
+	DefaultPort  int
+	DbDSN        string
+	DownloadData string
+	DownloadPath string
 }
 
 func (c *Config) Load() {
 	var err error
-
-	port, err := strconv.Atoi(os.Getenv("DEFAULT_PORT"))
+	port, err := strconv.Atoi(os.Getenv(KeyPort))
 	if err != nil || port == 0 {
 		port = defaultPort
 	}
@@ -26,12 +33,26 @@ func (c *Config) Load() {
 		return
 	}
 
-	dsn := os.Getenv("DSN")
+	dsn := os.Getenv(KeyDbDsn)
 	if dsn == "" {
 		dsn = defaultDSN
 	}
 
-	c.DSN = dsn
+	c.DbDSN = dsn
+
+	downloadData := os.Getenv(KeyDownloadData)
+	if downloadData == "" {
+		downloadData = ""
+	}
+
+	c.DownloadData = downloadData
+
+	downloadPath := os.Getenv(KeyDownloadPath)
+	if downloadPath == "" {
+		downloadPath = defaultPath
+	}
+
+	c.DownloadPath = downloadPath
 }
 
 func (c Config) GetPort() int {
@@ -39,5 +60,13 @@ func (c Config) GetPort() int {
 }
 
 func (c Config) GetDsn() string {
-	return c.DSN
+	return c.DbDSN
+}
+
+func (c Config) GetDownloadData() string {
+	return c.DownloadData
+}
+
+func (c *Config) GetDownloadPath() string {
+	return c.DownloadPath
 }

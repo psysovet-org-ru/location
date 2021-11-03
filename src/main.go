@@ -37,20 +37,14 @@ func main() {
 
 	defer db.Close()
 
+	log.Println(cfg.DbDSN)
+
 	mymigrate.SetDatabase(db)
 
 	// MigrateCmd is a cobra command to work with migrations
 	var MigrateCmd = &cobra.Command{
 		Use:   "migrate",
 		Short: "work with migrations",
-	}
-
-	InitCmd := &cobra.Command{
-		Use:   "init",
-		Short: "init",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return service2.PushData(db)
-		},
 	}
 
 	ServiceCmd := &cobra.Command{
@@ -76,15 +70,17 @@ func main() {
 		Use:   "env",
 		Short: "list env",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("DSN: " + cfg.GetDsn())
+			fmt.Println("DbDSN: " + cfg.GetDsn())
 			fmt.Println("Port: " + strconv.Itoa(cfg.GetPort()))
+			fmt.Println("Download data: " + cfg.GetDownloadData())
+			fmt.Println("Download path: " + cfg.GetDownloadPath())
 			return nil
 		},
 	}
 
 	var rootCmd = &cobra.Command{Use: "location"}
 
-	rootCmd.AddCommand(InitCmd, MigrateCmd, ServiceCmd, EnvCmd)
+	rootCmd.AddCommand(MigrateCmd, ServiceCmd, EnvCmd)
 
 	err = rootCmd.Execute()
 	if err != nil {
