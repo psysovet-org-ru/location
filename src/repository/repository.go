@@ -80,6 +80,46 @@ func (s Storage) GetCities(regionID int) ([]City, error) {
 	return s.listCities(rows)
 }
 
+func (s Storage) GetTitleCountry(countryId int) (string, error) {
+
+	row := s.db.QueryRow("select title from country where id=?", countryId)
+
+	title := ""
+
+	err := row.Scan(&title)
+	if err != nil {
+		return "", err
+	}
+
+	return title, nil
+}
+
+func (s Storage) GetTitleRegion(regionID int) (string, error) {
+	row := s.db.QueryRow("select title from regions where id=?", regionID)
+
+	title := ""
+
+	err := row.Scan(&title)
+	if err != nil {
+		return "", err
+	}
+
+	return title, nil
+}
+
+func (s Storage) GetTitleCity(cityID int) (string, error) {
+	row := s.db.QueryRow("select title from cities where id=?", cityID)
+
+	title := ""
+
+	err := row.Scan(&title)
+	if err != nil {
+		return "", err
+	}
+
+	return title, nil
+}
+
 func (s Storage) Search(regionID int, search string) ([]City, error) {
 	reg := strconv.Itoa(regionID)
 
